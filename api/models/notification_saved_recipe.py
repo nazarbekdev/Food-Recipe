@@ -5,7 +5,7 @@ User = get_user_model()
 
 
 class NotificationSaveRecipe(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications_received')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     notification_type = models.CharField(max_length=50)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

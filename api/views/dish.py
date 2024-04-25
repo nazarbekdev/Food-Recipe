@@ -2,9 +2,12 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+
+from accounts.models.user_follow import UserFollow
 from api.api_utils import recipe_rate
 from api.api_utils.recipe_rate import recipe_rate
 from api.models.dish import Dish
+# from api.models.notification_created_recipe import NotificationCreateRecipe
 from api.serializers.dish_crud import CreateDishSerializer, MyRecipeSerializer, MyRecipeDetailSerializer
 
 User = get_user_model()
@@ -18,6 +21,12 @@ class CreateDishGenericAPIView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        userfollows = UserFollow.objects.filter(to_user=request.user)
+        to_user = request.user.id
+        for userfollow in userfollows:
+            from_user_ = userfollow.from_user_id
+            notification = NotificationCreateRecipe.create_saved_recipe_notification(to_user=to_user,
+                                                                                     from_user=from_user_)
         return Response(serializer.data)
 
 
